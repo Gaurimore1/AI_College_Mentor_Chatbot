@@ -1,0 +1,5 @@
+Internship Preparation Tips:
+- Build 2-3 strong projects
+- Learn Python and SQL
+- Practice ML interview questions
+- Apply on LinkedIn and company websites

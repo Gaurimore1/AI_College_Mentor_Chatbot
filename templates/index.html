@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI College Mentor Chatbot</title>
+
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #eef2f3, #d9e2ec);
+            margin: 0;
+            padding: 0;
+        }
+
+        .chat-container {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-box {
+            height: 320px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f7f9fc;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-msg {
+            background: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin: 6px 0;
+            max-width: 80%;
+            align-self: flex-end;
+        }
+
+        .bot-msg {
+            background: #e9ecef;
+            color: #333;
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin: 6px 0;
+            max-width: 80%;
+            align-self: flex-start;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 6px;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        button {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: none;
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+
+        .toggle-btn {
+            background: #444;
+            font-size: 12px;
+            padding: 6px 10px;
+            margin-left: 6px;
+        }
+
+        /* ===== HISTORY PANEL ===== */
+        #historyPanel {
+            display: none;
+            margin-top: 20px;
+            padding: 12px;
+            background: #f1f1f1;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .history-time {
+            font-size: 12px;
+            color: gray;
+        }
+
+        /* ===== DARK MODE ===== */
+        .dark {
+            background: #121212;
+        }
+
+        .dark .chat-container {
+            background: #1e1e1e;
+            color: white;
+        }
+
+        .dark .chat-box {
+            background: #2a2a2a;
+        }
+
+        .dark .bot-msg {
+            background: #333;
+            color: #e0e0e0;
+        }
+
+        .dark input {
+            background: #2c2c2c;
+            color: white;
+            border: 1px solid #555;
+        }
+
+        .dark .subtitle {
+            color: #aaa;
+        }
+
+        .dark #historyPanel {
+            background: #2a2a2a;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="chat-container">
+
+    <div class="top-bar">
+        <div>
+            <a href="/logout" style="font-size:14px;">Logout</a>
+        </div>
+        <div>
+            <button class="toggle-btn" onclick="toggleHistory()">View Chat History</button>
+            <button class="toggle-btn" onclick="toggleDark()">Toggle Dark Mode</button>
+        </div>
+    </div>
+
+    <h2>AI College Mentor</h2>
+    <div class="subtitle">
+        Guidance for academics, projects, internships, and careers
+    </div>
+
+    <!-- CURRENT CHAT ONLY -->
+    <div class="chat-box" id="chatBox"></div>
+
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Ask your question..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <!-- CHAT HISTORY (SEPARATE) -->
+    <div id="historyPanel">
+        <h3>Chat History</h3>
+        <div id="historyContent"></div>
+    </div>
+
+</div>
+
+<script>
+async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const message = input.value.trim();
+    if (!message) return;
+
+    const chatBox = document.getElementById("chatBox");
+
+    chatBox.innerHTML += `<div class="user-msg"><b>You:</b> ${message}</div>`;
+    input.value = "";
+
+    const typingDiv = document.createElement("div");
+    typingDiv.className = "bot-msg";
+    typingDiv.innerHTML = "<i>Mentor is thinking...</i>";
+    chatBox.appendChild(typingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    try {
+        const response = await fetch("/chat", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({message})
+        });
+
+        const data = await response.json();
+        typingDiv.innerHTML = `<b>Mentor:</b><br>` + data.reply.replace(/\n/g, "<br>");
+
+    } catch {
+        typingDiv.innerHTML = "<b>Mentor:</b> Error getting response.";
+    }
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// ENTER KEY SUPPORT
+document.getElementById("userInput").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") sendMessage();
+});
+
+// DARK MODE
+function toggleDark() {
+    document.body.classList.toggle("dark");
+}
+
+// HISTORY PANEL
+async function toggleHistory() {
+    const panel = document.getElementById("historyPanel");
+    const content = document.getElementById("historyContent");
+
+    if (panel.style.display === "none") {
+        panel.style.display = "block";
+        content.innerHTML = "<i>Loading...</i>";
+
+        const response = await fetch("/history");
+        const data = await response.json();
+
+        content.innerHTML = "";
+        data.forEach(item => {
+            content.innerHTML += `
+                <div class="history-item">
+                    <b>You:</b> ${item[0]}<br>
+                    <b>Mentor:</b><br>${item[1].replace(/\n/g, "<br>")}
+                    <div class="history-time">${item[2]}</div>
+                </div>
+            `;
+        });
+    } else {
+        panel.style.display = "none";
+    }
+}
+</script>
+
+</body>
+</html>

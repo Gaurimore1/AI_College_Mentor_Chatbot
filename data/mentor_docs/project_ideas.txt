@@ -1,0 +1,11 @@
+Beginner AI/ML Projects:
+- Student Performance Prediction
+- Spam Email Classifier
+
+Intermediate AI/ML Projects:
+- Customer Churn Prediction
+- Recommendation System
+
+Advanced Projects:
+- RAG-based Chatbot
+- Fraud Detection System

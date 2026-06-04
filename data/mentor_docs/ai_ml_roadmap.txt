@@ -1,0 +1,13 @@
+AI/ML Roadmap for College Students
+
+Year 1:
+Learn Python, basic mathematics, and programming logic.
+
+Year 2:
+Study machine learning algorithms like Linear Regression, KNN, and Decision Trees.
+
+Year 3:
+Learn deep learning, NLP, and build real-world projects.
+
+Year 4:
+Focus on specialization, internships, and placements.

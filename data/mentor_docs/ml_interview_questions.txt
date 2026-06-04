@@ -1,0 +1,5 @@
+Q: What is Machine Learning?
+A: Machine Learning is a field of AI that allows systems to learn from data.
+
+Q: What is overfitting?
+A: Overfitting happens when a model performs well on training data but poorly on new data.
